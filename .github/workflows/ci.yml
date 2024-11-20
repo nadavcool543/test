@@ -10,30 +10,36 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
+
       - uses: actions/checkout@v3
-      
+
+      - name: Create .env file
+        run: |
+          echo "DB_PASSWORD=$DB_PASSWORD" > .env
+
+
       - name: Install Docker Compose
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-      
-      - name: Start containers
-        run: docker-compose -f "docker-compose.yml" up -d
-      
+
+      - name: Start containers (using secret for password)
+        run: docker-compose -f "docker-compose.yml" up -d --env-file .env  # Use .env file with secret
+
       - name: Wait for services
         run: sleep 10
-      
+
       - name: Test frontend
         run: curl -f http://localhost:8080 || exit 1
-      
+
       - name: Test backend
         run: curl -f http://localhost:3000 || exit 1
-      
-      - name: Test DB Connection
+
+      - name: Test DB Connection (using secret passed from .env)
         run: docker-compose exec -T backend npm test
-      
+
       - name: Stop containers
         run: docker-compose down -v
