@@ -1,46 +1,40 @@
-
 name: CI
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+ push:
+   branches: [ main ]
+ pull_request:
+   branches: [ main ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+ test:
+   runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: mydatabase
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+   services:
+     mysql:
+       image: mysql:5.7
+       env:
+         MYSQL_ROOT_PASSWORD: rootpassword
+         MYSQL_DATABASE: mydatabase
+       ports:
+         - 3306:3306
+       options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+     
+     backend:
+       image: node:14
+       volumes:
+         - ./backend:/app
+       working-dir: /app
+       env:
+         DB_HOST: mysql
+         DB_PORT: 3306
+         DB_USER: root
+         DB_PASSWORD: rootpassword
+         DB_NAME: mydatabase
+       ports:
+         - 3000:3000
+       cmd: ["npm", "install", "&&", "npm", "test"]
 
-    env:
-      DB_HOST: localhost
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: rootpassword
-      DB_NAME: mydatabase
-
-    defaults:
-      run:
-        working-directory: ./backend
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-
-
-      - run: npm install
-      
-      - run: npm test
+   steps:
+     - uses: actions/checkout@v3
+     - run: docker logs backend
