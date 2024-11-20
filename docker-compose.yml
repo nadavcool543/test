@@ -4,7 +4,7 @@ services:
   frontend:
     image: nginx:latest
     ports: 
-      - "8080:80"
+      - "8080:80" 
     volumes:
       - ./frontend:/usr/share/nginx/html
     networks:
@@ -20,8 +20,6 @@ services:
       - DB_NAME=mydatabase
     depends_on:
       - db
-    ports: 
-      - "3000:3000"
     volumes:
       - ./backend:/app
     working_dir: /app
@@ -36,7 +34,7 @@ services:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=mydatabase
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/mysq
     networks:
       - backend_net
 

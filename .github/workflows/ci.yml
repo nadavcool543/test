@@ -31,7 +31,7 @@ jobs:
         run: curl -f http://localhost:8080 || exit 1
 
       - name: Test backend
-        run: curl -f http://localhost:3000 || exit 1
+        run: docker-compose exec -T frontend curl -f http://backend:3000 || exit 1
 
       - name: Test DB Connection
         run: docker-compose exec -T backend npm test
