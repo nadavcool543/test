@@ -8,8 +8,10 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest 
-      
+    runs-on: ubuntu-latest
+    env:
+     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v3
       
@@ -17,12 +19,11 @@ jobs:
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-
-      - name: Create .env file
+      - name: Create env file
         run: |
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+         echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
       
-      - name: Start containers with environment variables
+      - name: Start containers
         run: docker-compose -f "docker-compose.yml" up -d
       
       - name: Wait for services
@@ -38,5 +39,4 @@ jobs:
         run: docker-compose exec -T backend npm test
       
       - name: Stop containers
-        if: always()  
         run: docker-compose down -v

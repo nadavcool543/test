@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   frontend:
     image: nginx:latest
@@ -8,15 +9,15 @@ services:
       - ./frontend:/usr/share/nginx/html
     networks:
       - frontend_net
+
   backend:
     image: node:14
-    env_file: .env
     environment:
       - DB_HOST=db
       - DB_PORT=3306
       - DB_USER=root
+      - DB_PASSWORD=${{ DB_PASSWORD }}
       - DB_NAME=mydatabase
-      - DB_PASSWORD=${DB_PASSWORD}
     depends_on:
       - db
     ports: 
@@ -28,19 +29,20 @@ services:
     networks:
       - frontend_net
       - backend_net
+
   db:
     image: mysql:5.7
-    env_file: .env
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${{ DB_PASSWORD }}
       - MYSQL_DATABASE=mydatabase
-      - MYSQL_USER=root
     volumes:
       - db_data:/var/lib/mysql
     networks:
       - backend_net
+
 volumes:
   db_data:
+
 networks:
   frontend_net:
   backend_net:
