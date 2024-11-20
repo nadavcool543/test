@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  frontend:
+    image: nginx:latest
+    ports: 
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    networks:
+      - frontend_net
+
+  backend:
+    image: node:14
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=rootpassword
+      - DB_NAME=mydatabase
+    depends_on:
+      - db
+    ports: 
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    working_dir: /app
+    command: bash -c "npm install && npm start"
+    networks:
+      - frontend_net
+      - backend_net
+
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=mydatabase
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - backend_net
+
+volumes:
+  db_data:
+
+networks:
+  frontend_net:
+  backend_net:
