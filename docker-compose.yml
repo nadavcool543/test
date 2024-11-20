@@ -3,7 +3,7 @@ version: '3'
 services:
   frontend:
     image: nginx:latest
-    ports:
+    ports: 
       - "8080:80"
     volumes:
       - ./frontend:/usr/share/nginx/html
@@ -12,15 +12,15 @@ services:
 
   backend:
     image: node:14
-    env_file: .env
     environment:
       - DB_HOST=db
       - DB_PORT=3306
-      - DB_USER=root  # Consider using a dedicated user for security
-    # Access DB password from .env file
+      - DB_USER=root
+      - DB_PASSWORD=${{DB_PASSWORD}}
+      - DB_NAME=mydatabase
     depends_on:
       - db
-    ports:
+    ports: 
       - "3000:3000"
     volumes:
       - ./backend:/app
@@ -32,8 +32,8 @@ services:
 
   db:
     image: mysql:5.7
-    env_file: .env
     environment:
+      - MYSQL_ROOT_PASSWORD=${{DB_PASSWORD}}
       - MYSQL_DATABASE=mydatabase
     volumes:
       - db_data:/var/lib/mysql

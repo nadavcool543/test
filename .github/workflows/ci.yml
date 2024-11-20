@@ -18,7 +18,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "DB_PASSWORD=myrootpassword" > .env
+          export DB_PASSWORD=myrootpasswrd && docker-compose up -d
 
 
       - name: Install Docker Compose
