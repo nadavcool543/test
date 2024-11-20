@@ -9,15 +9,16 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set DB_PASSWORD
+        run: echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+
       - name: Update docker-compose.yml with password
         run: |
-           sed -i "s/password/${DB_PASSWORD//\//\\/}/" docker-compose.yml
+           sed -i "s/password/$DB_PASSWORD/" docker-compose.yml
 
       - name: Install Docker Compose
         run: |
