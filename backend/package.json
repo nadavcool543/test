@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "node -e \"require('mysql2').createConnection({host:process.env.DB_HOST,user:process.env.DB_USER,password:process.env.DB_PASSWORD,database:process.env.DB_NAME}).connect(err=>{if(err){console.error(err);process.exit(1)}console.log('Connected!');process.exit(0)})\""
-},
+  },
   "dependencies": {
     "express": "^4.17.1",
     "mysql2": "^2.3.3"

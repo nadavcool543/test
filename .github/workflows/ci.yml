@@ -13,12 +13,11 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
-
       - uses: actions/checkout@v3
 
-      - name: Create .env file
+      - name: Update docker-compose.yml with password
         run: |
-          export DB_PASSWORD=myrootpasswrd
+          sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=${{ secrets.DB_PASSWORD }}/" docker-compose.yml
 
       - name: Install Docker Compose
         run: |
@@ -37,7 +36,7 @@ jobs:
       - name: Test backend
         run: curl -f http://localhost:3000 || exit 1
 
-      - name: Test DB Connection (using secret passed from .env)
+      - name: Test DB Connection
         run: docker-compose exec -T backend npm test
 
       - name: Stop containers
