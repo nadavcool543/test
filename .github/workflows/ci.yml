@@ -18,15 +18,14 @@ jobs:
 
       - name: Create .env file
         run: |
-          export DB_PASSWORD=myrootpasswrd && docker-compose up -d
-
+          export DB_PASSWORD=myrootpasswrd
 
       - name: Install Docker Compose
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
 
-      - name: Start containers (using secret for password)
+      - name: Start containers 
         run: docker-compose -f "docker-compose.yml" up -d 
 
       - name: Wait for services
