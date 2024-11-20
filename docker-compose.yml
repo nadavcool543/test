@@ -16,7 +16,7 @@ services:
       - DB_HOST=db
       - DB_PORT=3306
       - DB_USER=root
-      - DB_PASSWORD=${{ DB_PASSWORD }}
+      - DB_PASSWORD=${ DB_PASSWORD }
       - DB_NAME=mydatabase
     depends_on:
       - db
@@ -33,7 +33,7 @@ services:
   db:
     image: mysql:5.7
     environment:
-      - MYSQL_ROOT_PASSWORD=${{ DB_PASSWORD }}
+      - MYSQL_ROOT_PASSWORD=${ DB_PASSWORD }
       - MYSQL_DATABASE=mydatabase
     volumes:
       - db_data:/var/lib/mysql
