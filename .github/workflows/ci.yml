@@ -8,9 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    env:
-      DB_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}  
+    runs-on: ubuntu-latest 
       
     steps:
       - uses: actions/checkout@v3
@@ -20,16 +18,18 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
 
-      - name: Create env file
-        run: |
-          echo "DB_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+      - name: Set up environment variables
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
       
       - name: Start containers
         run: docker-compose -f "docker-compose.yml" up -d
       
       - name: Wait for services
-        run: sleep 15
+        run: sleep 10
       
       - name: Test frontend
         run: curl -f http://localhost:8080 || exit 1
