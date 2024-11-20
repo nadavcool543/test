@@ -16,7 +16,6 @@ services:
       - DB_HOST=db
       - DB_PORT=3306
       - DB_USER=root
-      - DB_PASSWORD=rootpassword
       - DB_NAME=mydatabase
     depends_on:
       - db
