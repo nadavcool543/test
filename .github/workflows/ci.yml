@@ -27,7 +27,7 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Start containers (using secret for password)
-        run: docker-compose -f "docker-compose.yml" up -d --env-file .env  # Use .env file with secret
+        run: docker-compose -f "docker-compose.yml" up -d 
 
       - name: Wait for services
         run: sleep 10
