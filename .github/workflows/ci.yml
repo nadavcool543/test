@@ -17,7 +17,7 @@ jobs:
 
       - name: Update docker-compose.yml with password
         run: |
-          sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=${{ secrets.DB_PASSWORD }}/" docker-compose.yml
+           sed -i 's/password/${{ secrets.DB_PASSWORD }}/' docker-compose.yml
 
       - name: Install Docker Compose
         run: |
