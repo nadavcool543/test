@@ -1,4 +1,4 @@
-name: Service Tests
+name: CI
 
 on:
   push:
@@ -7,47 +7,26 @@ on:
     branches: [ main ]
 
 jobs:
-  test-containers:
+  test:
     runs-on: ubuntu-latest
-    
-    services:
-      frontend:
-        image: nginx:latest
-        ports:
-          - 8080:80
-        volumes:
-          - ./frontend:/usr/share/nginx/html
-
-      backend:
-        image: node:14
-        env:
-          DB_HOST: mysql
-          DB_PORT: 3306
-          DB_USER: root
-          DB_PASSWORD: rootpassword
-          DB_NAME: mydatabase
-        ports:
-          - 3000:3000
-
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: mydatabase
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Test Services
-      run: |
-        # Test frontend
-        curl -s http://localhost:8080 | grep "Frontend"
+      - uses: actions/checkout@v3
+      
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" up -d
         
-        # Test backend
-        curl -s http://localhost:3000 | grep "Backend"
+      - name: Wait for services
+        run: sleep 10
         
-        # Test database
-        mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1" mydatabase
+      - name: Test frontend
+        run: curl -f http://localhost:8080 || exit 1
+        
+      - name: Test backend
+        run: curl -f http://localhost:3000 || exit 1
+        
+      - name: Test DB Connection
+        run: docker-compose exec -T backend npm test
+        
+      - name: Stop containers
+        if: always()
+        run: docker-compose down
