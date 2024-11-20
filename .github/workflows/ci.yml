@@ -1,40 +1,53 @@
-name: CI
+name: Service Tests
 
 on:
- push:
-   branches: [ main ]
- pull_request:
-   branches: [ main ]
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
- test:
-   runs-on: ubuntu-latest
+  test-containers:
+    runs-on: ubuntu-latest
+    
+    services:
+      frontend:
+        image: nginx:latest
+        ports:
+          - 8080:80
+        volumes:
+          - ./frontend:/usr/share/nginx/html
 
-   services:
-     mysql:
-       image: mysql:5.7
-       env:
-         MYSQL_ROOT_PASSWORD: rootpassword
-         MYSQL_DATABASE: mydatabase
-       ports:
-         - 3306:3306
-       options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-     
-     backend:
-       image: node:14
-       volumes:
-         - ./backend:/app
-       working-dir: /app
-       env:
-         DB_HOST: mysql
-         DB_PORT: 3306
-         DB_USER: root
-         DB_PASSWORD: rootpassword
-         DB_NAME: mydatabase
-       ports:
-         - 3000:3000
-       cmd: ["npm", "install", "&&", "npm", "test"]
+      backend:
+        image: node:14
+        env:
+          DB_HOST: mysql
+          DB_PORT: 3306
+          DB_USER: root
+          DB_PASSWORD: rootpassword
+          DB_NAME: mydatabase
+        ports:
+          - 3000:3000
 
-   steps:
-     - uses: actions/checkout@v3
-     - run: docker logs backend
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: mydatabase
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Test Services
+      run: |
+        # Test frontend
+        curl -s http://localhost:8080 | grep "Frontend"
+        
+        # Test backend
+        curl -s http://localhost:3000 | grep "Backend"
+        
+        # Test database
+        mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1" mydatabase
