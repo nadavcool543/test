@@ -12,8 +12,9 @@ jobs:
     
 
     steps:
-      - name: action-docker-compose
-        uses: sudo-bot/action-docker-compose@latest
+      - name: Docker Compose Command
+        uses: blag/action-docker-compose@v0.0.1
+            
 
       - name: Set DB_PASSWORD
         run: echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
