@@ -17,7 +17,7 @@ jobs:
         run: echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Build & Run Containers
-        run: ./scripts/build_and_run.sh
+        run: chmod +x ./scripts/build_and_run.sh && ./scripts/build_and_run.sh
          
       - name: Wait for services
         run: sleep 10
