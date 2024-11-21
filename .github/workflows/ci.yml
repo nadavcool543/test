@@ -19,7 +19,7 @@ jobs:
       - name: Build & Run Containers
         run: ./scripts/build_and_run.sh
 
-      - name: Build & Run Containers
+      - name: Test Containers
         run: ./scripts/tests.sh
          
   deploy:
