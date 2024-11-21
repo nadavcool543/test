@@ -17,6 +17,7 @@ jobs:
 
       - name: Build & Run
         run: |
+         echo "DB_PASSWORD is set to $DB_PASSWORD"
          docker network create frontend_net
          docker network create backend_net
          docker build -t frontend ./frontend/. 
