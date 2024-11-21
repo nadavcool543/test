@@ -12,7 +12,8 @@ jobs:
     
 
     steps:
-      - uses: actions/checkout@v4
+      - name: action-docker-compose
+        uses: sudo-bot/action-docker-compose@latest
 
       - name: Set DB_PASSWORD
         run: echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
