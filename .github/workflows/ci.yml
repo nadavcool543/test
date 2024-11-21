@@ -12,8 +12,9 @@ jobs:
     
 
     steps:
-      - name: Docker Compose Command
-        uses: blag/action-docker-compose@v0.0.1
+      - name: Docker compose tests run
+        uses: cloudposse/github-action-docker-compose-test-run@0.2.0
+            
             
 
       - name: Set DB_PASSWORD
