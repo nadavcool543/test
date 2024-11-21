@@ -18,16 +18,10 @@ jobs:
 
       - name: Build & Run Containers
         run: ./scripts/build_and_run.sh
+
+      - name: Build & Run Containers
+        run: ./scripts/tests.sh
          
-      - name: Wait for services
-        run: sleep 10
-
-      - name: Test frontend
-        run: curl -f http://localhost:8080 || exit 1
-
-      - name: Test backend
-        run: curl -f http://localhost:3000 || exit 1
-
   deploy:
     runs-on: ubuntu-latest
     needs: test 
