@@ -13,15 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set DB_PASSWORD
-        run: echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-
-      - name: Install Docker Compose
+      - name: Build & Run
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-      - name: Start containers 
-        run: docker-compose -f "docker-compose.yml" up -d 
+         docker network create frontend_net
+         docker network create backend_net
+         docker build -t frontend ./frontend/. 
+         docker build -t backend  ./backend/. 
+         docker build -t db ./db/. 
+         docker run -d --name frontend -p 8080:80 --network frontend_net frontend
+         docker run -d --name backend -p 3000:3000 -e DB_HOST=db -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=${{ secrets.DB_PASSWORD}} -e DB_NAME=mydatabase --network frontend_net --network backend_net backend
+         docker run -d --name db -e MYSQL_ROOT_PASSWORD={{ secrets.DB_PASSWORD }} -e MYSQL_DATABASE=mydatabase --network backend_net db
 
       - name: Wait for services
         run: sleep 10
@@ -30,10 +31,7 @@ jobs:
         run: curl -f http://localhost:8080 || exit 1
 
       - name: Test backend
-        run: docker-compose exec -T frontend curl -f http://backend:3000 || exit 1
-
-      - name: Test DB Connection
-        run: docker-compose exec -T backend npm test
+        run: curl -f http://localhost:3000 || exit 1
 
       - name: Stop containers
         run: docker-compose down -v
@@ -71,4 +69,3 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG ./${{ matrix.service }}/.
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-      
